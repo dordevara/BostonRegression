@@ -10,26 +10,25 @@ of the relationship between them. At the moment the goal is to find what kind of
 can be applied to data for better crime prediction (for example if linear trends are visible, we may apply 
 a linear regression model).  
 
-Setting all code chunks as “echo=TRUE”, means that they will be included in the final rendered version. 
-Here I also specified the working directory.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-setwd("~/RDemo/BostonRegression")
+
 ```
 
-Read in data from a csv file
-```{r}
+Specify the working directory and read in data from a csv file:
+```{r warning=FALSE}
+setwd("~/RDemo/BostonRegression")
 Boston = read.csv(file="Boston.csv",header=TRUE,sep=",")
 #library(MASS)
 #attach(Boston)
 data("Boston")
-View(Boston) #invoke the data viewer that also contain some basic exploratory features
+#View(Boston) #invoke the data viewer that also contain some basic exploratory features
 #fix(Boston) #open a quick data editor
 #??Boston #get familliar with the dataset from its original source
 ```
 
 Descriptive Statistics
-```{r}
+```{r warning=FALSE}
 library(pastecs)
 library(DescTools)
 stat.desc(Boston)
@@ -104,7 +103,7 @@ ggcorrplot(corr, lab=TRUE, hc.order = TRUE, outline.col = "white", type = "full"
 ```
  
 
-Correlation between crim and zn: 
+Boxplots and a closer look at crim and zn and: 
 ```{r}
 my_data <- Boston[, c(1,2)]
 chart.Correlation(my_data, histogram=TRUE, pch=19)
@@ -118,7 +117,7 @@ Boston %>% #Predictors boxplots -chas where we can clearly see the outliers
   theme_grey()
 ```
 
-Is the correlation between zone and crim statistically significant?
+Is the correlation between zone and crim statistically significant:
 ```{r}
 ggplot(data=Boston)+
    geom_point(mapping = aes(x=zn, y=crim)) +
