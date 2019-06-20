@@ -26,8 +26,8 @@ View(Boston) #invoke the data viewer that also contain some basic exploratory fe
 
 Descriptive Statistics
 ```{r}
-#library(pastecs)
-#library(DescTools)
+library(pastecs)
+library(DescTools)
 stat.desc(Boston)
 str(Boston)
 cat("\nThe mean : ", mean(Boston$crim))
@@ -35,7 +35,7 @@ cat("\nThe median : ", median(Boston$crim))
 cat("\nThe mode : ", mode(Boston$crim))
 cat("\nThe standard deviation : ", sd(Boston$crim), "\n")
 #library(data.table)
-#library(Hmisc)
+library(Hmisc)
 describe(Boston)
 describe(~ Boston$crim+Boston$zn)
 deff(Boston$crim, Boston$zn)
@@ -56,15 +56,15 @@ Install and load some required packages
 #install.packages("PerformanceAnalytics")
 #install.packages("DescTools")
 
-#library(corrr)
-#library(gridExtra)
-#library(ggplot2)
-#library(tidyverse)
-#library(dplyr)
-#library(DT)
-#library(leaps)
-#library(glmnet)
-#library(PerformanceAnalytics)
+library(corrr)
+library(gridExtra)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(DT)
+library(leaps)
+library(glmnet)
+library(PerformanceAnalytics)
 ```
 
 
