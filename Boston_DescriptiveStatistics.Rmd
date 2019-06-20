@@ -4,10 +4,14 @@ author: "Roxana Butenco"
 date: "18 June 2019"
 output: html_document
 ---
-In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression of the relationship between them. At the moment the goal is to find what kind of regression modelling, if any, can be applied to data for better crime prediction (for example if linear trends are visible, we may apply a linear regression model).  
+In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. 
+Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression 
+of the relationship between them. At the moment the goal is to find what kind of regression modelling, if any, 
+can be applied to data for better crime prediction (for example if linear trends are visible, we may apply 
+a linear regression model).  
 
-
-Setting all code chunks as “echo=TRUE”, means that they will be included in the final rendered version. Here I also specified the working directory.
+Setting all code chunks as “echo=TRUE”, means that they will be included in the final rendered version. 
+Here I also specified the working directory.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 setwd("~/RDemo/BostonRegression")
@@ -121,7 +125,8 @@ ggplot(data=Boston)+
     theme_bw()
 cor.test(Boston$zn,Boston$crim)#
 ```
-By looking at the above plot and correlation coefficient, it doesn't seem there is much correlation between zn and crim, or at least it's not statistically significant.
+By looking at the above plot and correlation coefficient, it doesn't seem there is much correlation between zn and crim, 
+or at least it's not statistically significant.
 
 Predictors histograms less chas:
 ```{r}
@@ -134,6 +139,8 @@ Boston %>%
   theme_bw()
 ```
 
-In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis (crim increases as medv decreases). 
+In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
+crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis 
+(crim increases as medv decreases). 
 Crim shows almost no linear relationship with ptratio, rm and zn and the correlation doesn't mean much in these cases.
 So, the only safe conclusion here is that a linear trend may exist between rad, tax, lstat, nox, indus, age, medv, black, dis and crim.
