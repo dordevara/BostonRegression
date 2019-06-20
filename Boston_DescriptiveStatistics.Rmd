@@ -134,6 +134,8 @@ Boston %>%
   theme_bw()
 ```
 
-In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis (crim increases as medv decreases). 
+In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
+crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis 
+(crim increases as medv decreases). 
 Crim shows almost no linear relationship with ptratio, rm and zn and the correlation doesn't mean much in these cases.
 So, the only safe conclusion here is that a linear trend may exist between rad, tax, lstat, nox, indus, age, medv, black, dis and crim.
