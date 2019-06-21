@@ -2,19 +2,19 @@
 title: "Boston_DescriptiveStatistics"
 author: "Roxana Butenco"
 date: "18 June 2019"
-output: html_document
+output: 
+  html_document: 
+    code_folding: show
 ---
 In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. 
 Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression 
 of the relationship between them. At the moment the goal is to find what kind of regression modelling, if any, 
-can be applied to data for better crime prediction (for example if linear trends are visible, we may apply 
+can be applied to data for better crime prediction (for example if linear trends are visible, we may fit 
 a linear regression model).  
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
-
 Specify the working directory and read in data from a csv file:
 ```{r warning=FALSE}
 setwd("~/RDemo/BostonRegression")
@@ -26,7 +26,6 @@ data("Boston")
 #fix(Boston) #open a quick data editor
 #??Boston #get familliar with the dataset from its original source
 ```
-
 Descriptive Statistics
 ```{r warning=FALSE}
 library(pastecs)
@@ -37,16 +36,9 @@ cat("\nThe mean : ", mean(Boston$crim))
 cat("\nThe median : ", median(Boston$crim))
 cat("\nThe mode : ", mode(Boston$crim))
 cat("\nThe standard deviation : ", sd(Boston$crim), "\n")
-#library(data.table)
-library(Hmisc)
-describe(Boston)
-describe(~ Boston$crim+Boston$zn)
-deff(Boston$crim, Boston$zn)
-plot(Boston)
 ```
-
 Install and load some required packages
-```{r}
+```{r message=FALSE, warning=FALSE}
 #install.packages("pastecs")
 #install.packages("corrr")
 #install.packages("gridExtra")
@@ -69,10 +61,24 @@ library(leaps)
 library(glmnet)
 library(PerformanceAnalytics)
 ```
-
-
-Correlation of target variable crim with all predictor variables less chas:
-```{r}
+Correlation matrix visualization with Pearson correlation coefficient
+```{r warning=FALSE}
+#install.packages("ggcorrplot") 
+#if(!require(devtools)) install.packages("devtools")
+#devtools::install_github("kassambara/ggcorrplot")
+library(ggcorrplot)
+#library(ggplot2)
+corr <- round(cor(Boston), 1)
+ggcorrplot(corr, lab=TRUE, hc.order = TRUE, outline.col = "white", type = "full", ggtheme = ggplot2::theme_gray,
+           colors = c("#6D9EC1", "white", "#E46726")) 
+```
+Correlation matrix visualization with Pearson correlation coefficient
+Predictor variables correlation chart 
+```{r out.width = "100%"}
+chart.Correlation(Boston, histogram=TRUE, pch=19)
+```
+Scatterplots of target variable crim with all predictor variables less chas:
+```{r warning=FALSE, out.width="100%"}
 Boston %>% correlate() %>% focus(crim)
 Boston %>%
   gather(-crim, key = "var", value = "value") %>%
@@ -83,28 +89,18 @@ Boston %>%
   facet_wrap(~ var, scales = "free") +
   theme_bw()
 ```
-
-Correlation matrix visualization with Pearson correlation coefficient
-Predictor variables correlation chart 
-```{r}
-chart.Correlation(Boston, histogram=TRUE, pch=19)
+Predictors histograms less chas:
+```{r warning=FALSE, out.width = "100%"}
+Boston %>% 
+  gather(-crim, key = "var", value = "value") %>%
+  filter(var != "chas") %>%
+  ggplot(aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~ var, scales = "free") +
+  theme_bw()
 ```
-
-Correlation matrix visualization with Pearson correlation coefficient
-```{r}
-#install.packages("ggcorrplot") 
-#if(!require(devtools)) install.packages("devtools")
-#devtools::install_github("kassambara/ggcorrplot")
-library(ggcorrplot)
-library(ggplot2)
-corr <- round(cor(Boston), 1)
-ggcorrplot(corr, lab=TRUE, hc.order = TRUE, outline.col = "white", type = "full", ggtheme = ggplot2::theme_gray,
-           colors = c("#6D9EC1", "white", "#E46726")) 
-```
- 
-
-Boxplots and a closer look at crim and zn and: 
-```{r}
+Boxplots and a closer look at crim and zn: 
+```{r warning=FALSE}
 my_data <- Boston[, c(1,2)]
 chart.Correlation(my_data, histogram=TRUE, pch=19)
 
@@ -116,9 +112,8 @@ Boston %>% #Predictors boxplots -chas where we can clearly see the outliers
   facet_wrap(~ var, scales = "free") +
   theme_grey()
 ```
-
 Is the correlation between zone and crim statistically significant:
-```{r}
+```{r warning=FALSE}
 ggplot(data=Boston)+
    geom_point(mapping = aes(x=zn, y=crim)) +
     theme_bw()
@@ -126,17 +121,6 @@ cor.test(Boston$zn,Boston$crim)#
 ```
 By looking at the above plot and correlation coefficient, it doesn't seem there is much correlation between zn and crim, 
 or at least it's not statistically significant.
-
-Predictors histograms less chas:
-```{r}
-Boston %>% 
-  gather(-crim, key = "var", value = "value") %>%
-  filter(var != "chas") %>%
-  ggplot(aes(x = value)) +
-  geom_histogram() +
-  facet_wrap(~ var, scales = "free") +
-  theme_bw()
-```
 
 In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
 crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis 
