@@ -12,15 +12,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Descriptive Statistics
-
 In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. 
 Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression 
 of the relationship between variables At the moment the goal is to find what kind of regression modelling, if any, 
 can be applied to data for better crime prediction (for example if linear trends are visible, we may fit 
 a linear regression model). 
 
-#Data Exploration
-
+## Data Exploration
 Specify the working directory and read in data from a csv file:
 ```{r}
 setwd("~/RDemo/LinearRegression")
@@ -41,6 +39,7 @@ cat("The median : ", median(Boston$crim))
 cat("The mode : ", mode(Boston$crim))
 cat("The standard deviation : ", sd(Boston$crim), "\n")
 ```
+## Correlation
 Correlation matrix visualization with Pearson correlation coefficient.
 Predictor variables correlation chart 
 ```{r message=FALSE, warning=FALSE, out.width="80%", fig.align='center'}
@@ -49,6 +48,7 @@ library(xts)
 library(PerformanceAnalytics)
 chart.Correlation(Boston, histogram=TRUE, pch=19)
 ```
+## Data Distribution
 Let's look at how data is distributed (predictor variables versus target variable crim).  
 Scatterplots of target variable crim with all predictor variables less chas:
 ```{r warning=FALSE, out.width="80%", fig.align='center'}
@@ -77,6 +77,7 @@ A closer look at correlation between crim and zn:
 my_data <- Boston[, c(2,1)]
 chart.Correlation(my_data, histogram=TRUE, pch=19)
 ```
+## Outliers
 By looking at boxplots we can easily see if there are any outliers:
 ```{r warning=FALSE, out.width = "80%", fig.align='center'}
 Boston %>% #Predictors boxplots -chas where we can clearly see the outliers 
@@ -97,7 +98,7 @@ cor.test(Boston$zn,Boston$crim)#
 By looking at the above plot and correlation coefficient, it doesn't seem there is much correlation between zn and crim, 
 or at least it's not statistically significant.
 
-#Conclusion
+## Conclusion
 Our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
 crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis 
 (crim increases as medv decreases). 
