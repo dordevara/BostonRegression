@@ -1,72 +1,58 @@
 ---
-title: "Boston_DescriptiveStatistics"
+title: "ExploringData"
 author: "Roxana Butenco"
-date: "18 June 2019"
-output: 
+date: "7/2/2019"
+output:
   html_document: 
     code_folding: show
 ---
-In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. 
-Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression 
-of the relationship between them. At the moment the goal is to find what kind of regression modelling, if any, 
-can be applied to data for better crime prediction (for example if linear trends are visible, we may fit 
-a linear regression model).  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
+
+## Descriptive Statistics
+
+In this document we'll look at the dataset in more detail and will seek significant predictors in relation to crime. 
+Will look at the correlation between all variables to analyse each correlation coefficient, getting a first impression 
+of the relationship between variables At the moment the goal is to find what kind of regression modelling, if any, 
+can be applied to data for better crime prediction (for example if linear trends are visible, we may fit 
+a linear regression model). 
+
+#Data Exploration
+
 Specify the working directory and read in data from a csv file:
-```{r warning=FALSE}
-setwd("~/RDemo/BostonRegression")
+```{r}
+setwd("~/RDemo/LinearRegression")
 Boston = read.csv(file="Boston.csv",header=TRUE,sep=",")
-#library(MASS)
-#attach(Boston)
-data("Boston")
 #View(Boston) #invoke the data viewer that also contain some basic exploratory features
 #fix(Boston) #open a quick data editor
 #??Boston #get familliar with the dataset from its original source
 ```
-Descriptive Statistics
-```{r warning=FALSE}
-library(pastecs)
-str(Boston)
-cat("\nThe mean : ", mean(Boston$crim))
-cat("\nThe median : ", median(Boston$crim))
-cat("\nThe mode : ", mode(Boston$crim))
-cat("\nThe standard deviation : ", sd(Boston$crim), "\n")
+Any missing values?
+```{r}
+colSums(is.na(Boston))
 ```
-Install and load some required packages
-```{r message=FALSE, warning=FALSE}
-#install.packages("pastecs")
-#install.packages("corrr")
-#install.packages("gridExtra")
-#install.packages("ggplot2")
-#install.packages("tidyverse")
-#install.packages("dplyr")
-#install.packages("DT")
-#install.packages("leaps")
-#install.packages("glmnet")
-#install.packages("PerformanceAnalytics")
-#install.packages("DescTools")
-
-library(corrr)
-library(gridExtra)
-library(ggplot2)
-library(tidyverse)
-library(dplyr)
-library(DT)
-library(leaps)
-library(glmnet)
-library(PerformanceAnalytics)
+Some descriptive statistics:
+```{r}
+str(Boston)
+cat("The mean : ", mean(Boston$crim))
+cat("The median : ", median(Boston$crim))
+cat("The mode : ", mode(Boston$crim))
+cat("The standard deviation : ", sd(Boston$crim), "\n")
 ```
 Correlation matrix visualization with Pearson correlation coefficient.
 Predictor variables correlation chart 
-```{r out.width = "100%"}
+```{r message=FALSE, warning=FALSE, out.width="80%", fig.align='center'}
+library(zoo)
+library(xts)
+library(PerformanceAnalytics)
 chart.Correlation(Boston, histogram=TRUE, pch=19)
 ```
+Let's look at how data is distributed (predictor variables versus target variable crim).  
 Scatterplots of target variable crim with all predictor variables less chas:
-```{r warning=FALSE, out.width="100%"}
-Boston %>% correlate() %>% focus(crim)
+```{r warning=FALSE, out.width="80%", fig.align='center'}
+library(tidyverse)
 Boston %>%
   gather(-crim, key = "var", value = "value") %>%
   filter(var != "chas") %>%
@@ -77,7 +63,7 @@ Boston %>%
   theme_bw()
 ```
 Predictors histograms less chas:
-```{r warning=FALSE, out.width = "100%"}
+```{r warning=FALSE, out.width = "80%", fig.align='center'}
 Boston %>% 
   gather(-crim, key = "var", value = "value") %>%
   filter(var != "chas") %>%
@@ -86,11 +72,13 @@ Boston %>%
   facet_wrap(~ var, scales = "free") +
   theme_bw()
 ```
-Boxplots and a closer look at crim and zn: 
-```{r warning=FALSE}
-my_data <- Boston[, c(1,2)]
+A closer look at correlation between crim and zn: 
+```{r warning=FALSE, out.width = "60%", fig.align='center'}
+my_data <- Boston[, c(2,1)]
 chart.Correlation(my_data, histogram=TRUE, pch=19)
-
+```
+By looking at boxplots we can easily see if there are any outliers:
+```{r warning=FALSE, out.width = "80%", fig.align='center'}
 Boston %>% #Predictors boxplots -chas where we can clearly see the outliers 
   gather(-crim, key = "var", value = "value") %>%
   filter(var != "chas") %>%
@@ -100,7 +88,7 @@ Boston %>% #Predictors boxplots -chas where we can clearly see the outliers
   theme_grey()
 ```
 Is the correlation between zone and crim statistically significant:
-```{r warning=FALSE}
+```{r warning=FALSE, out.width = "60%", fig.align='center'}
 ggplot(data=Boston)+
    geom_point(mapping = aes(x=zn, y=crim)) +
     theme_bw()
@@ -109,7 +97,8 @@ cor.test(Boston$zn,Boston$crim)#
 By looking at the above plot and correlation coefficient, it doesn't seem there is much correlation between zn and crim, 
 or at least it's not statistically significant.
 
-In conclusion, our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
+#Conclusion
+Our response variable crim has a moderate uphill relationship with rad, tax, lstat (e.g. with a unit change in rad, 
 crim increases), a week positive relationship with nox, indus and age and it has a week negative relation with medv, black and dis 
 (crim increases as medv decreases). 
 Crim shows almost no linear relationship with ptratio, rm and zn and the correlation doesn't mean much in these cases.
