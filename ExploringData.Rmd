@@ -1,5 +1,5 @@
 ---
-title: "ExploringData"
+title: "Exploring Boston Dataset"
 author: "Roxana Butenco"
 date: "7/2/2019"
 output:
@@ -18,7 +18,7 @@ of the relationship between variables At the moment the goal is to find what kin
 can be applied to data for better crime prediction (for example if linear trends are visible, we may fit 
 a linear regression model). 
 
-## Data Exploration
+## Data Ingestion and Exploration
 Specify the working directory and read in data from a csv file:
 ```{r}
 setwd("~/RDemo/LinearRegression")
