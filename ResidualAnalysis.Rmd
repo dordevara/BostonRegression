@@ -1,0 +1,292 @@
+---
+title: "Simple Linear Regression: Residual Analysis"
+author: "Roxana Butenco"
+date: "7/6/2019"
+output:
+  html_document: 
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+In order to see how good the model we have produced fits the data, we will perform residual analysis for each of the predictors individually. This will help us see how is our error: is our error large oris it small. It will also tell us whether the model we are using is actually apropriate for our data.
+```{r}
+setwd("~/RDemo/BostonRegression")
+# read in data from a csv file
+Boston = read.csv(file="Boston.csv",header=TRUE,sep=",")
+attach(Boston)
+```
+## Step 1: Fit the model
+```{r out.width = "60%", fig.align='center'}
+dataset <- Boston
+fit <- lm(crim ~ zn, data = dataset)
+summary(fit)
+par(mfrow = c(2, 2))
+plot(fit)  # Plot the model 
+```  
+
+## Step 2: Obtain predicted and residual values
+```{r}
+dataset$predicted <- predict(fit)   # Save the predicted values
+dataset$residuals <- residuals(fit) # Save the residual values
+# Quick look at the actual, predicted, and residual values, showing the first 6
+library(dplyr)
+dataset %>% select(crim, predicted, residuals) %>% head()
+```
+## Step 3: Plot the actual and predicted values
+```{r out.width = "50%", fig.align='center'}
+library(ggplot2)
+ggplot(dataset, aes(x = zn, y = crim)) +  
+  geom_point()  # Plot the actual points
+```
+Next, we plot the predicted values in a way that they're distinguishable from the actual values. 
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = zn, y = crim)) +
+  geom_point() +
+  geom_point(aes(y = predicted), shape = 1)  # Add the predicted values
+```
+Connect the actual data points with their corresponding predicted value
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = zn, y = crim)) +
+  geom_segment(aes(xend = zn, yend = predicted)) +
+  geom_point()+
+  geom_point(aes(y = predicted), shape = 1)
+```
+Add the regression slope with geom_smooth():  
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = zn, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "pink") +  # Plot regression slope
+  geom_segment(aes(xend = zn, yend = predicted), alpha = .2) +  # alpha to fade lines
+  geom_point() +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw() 
+``` 
+
+## Step 4: Use residuals to adjust color
+Different color for actual value greater or less than predicted
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = zn, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +
+  geom_segment(aes(xend = zn, yend = predicted), alpha = .2) +
+  # > Color adjustments made here...
+  geom_point(aes(color = residuals)) +  # Color mapped here
+  scale_color_gradient2(low = "blue", mid = "white", high = "red") +  # Colors to use here
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+In this example, the colours nicely help to identify non-linearity in the data:  
+
+1. we can see that there is more red for extreme predicted crime values where the actual values 
+2. are much smaller than what is being predicted, this suggests that the relationship between the variables is non-linear, and might be better to try a different model.  
+
+There is no other statistical meaningfull interpretation from this example.  
+
+Lets have a look at Crim and Age
+```{r out.width = "60%", fig.align='center'}
+fit1 <- lm(crim ~ age, data = dataset)
+summary(fit1)
+par(mfrow = c(2, 2))
+plot(fit1) 
+dataset$predicted <- predict(fit1)   # Save the predicted values
+dataset$residuals <- residuals(fit1)
+dataset %>% select(crim, predicted, residuals) %>% head()
+```
+Plot the actual and predicted values
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = age, y = crim)) +  
+  geom_point() 
+```
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = age, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +
+  geom_segment(aes(xend = age, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) +  # Color mapped here
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  # Colors to use here
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+## Residual analysis for each predictors
+Crim and Rad
+```{r out.width = "60%", fig.align='center'}
+fit2 <- lm(crim ~ rad, data = dataset)
+summary(fit2)
+par(mfrow = c(2, 2))
+plot(fit2) 
+dataset$predicted <- predict(fit2)  
+dataset$residuals <- residuals(fit2)
+dataset %>% select(crim, predicted, residuals) %>% head()
+```
+Plot the actual and predicted values
+```{r out.width = "50%", fig.align='center'}
+ggplot(dataset, aes(x = rad, y = crim)) +  
+  geom_point() 
+ggplot(dataset, aes(x = rad, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +
+  geom_segment(aes(xend = rad, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) +  # Color mapped here
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  # Colors to use here
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+From this residual analysis we can see that the bigger the values for age, the predicted values for crim are increasing substantially, in other words, the variance increases, therefore, we have evidence that another type of model other than linear, may be a better fit here.
+
+Crim and Indus
+```{r out.width = "60%", fig.align='center'}
+fit4 <- lm(crim ~ indus, data = dataset)
+summary(fit4)
+par(mfrow = c(2, 2))
+plot(fit4) 
+dataset$predicted <- predict(fit4)  
+dataset$residuals <- residuals(fit4)
+
+ggplot(dataset, aes(x = indus, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = indus, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) +  # Color mapped here
+  scale_color_gradient2(low = "blue", mid = "white", high = "red") +  # Colors to use here
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+par(mfrow = c(2, 2))
+fit5 <- lm(crim ~ chas, data = dataset)
+summary(fit5)
+plot(fit5) 
+dataset$predicted <- predict(fit5)  
+dataset$residuals <- residuals(fit5)
+```
+```{r out.width = "60%", fig.align='center'}
+par(mfrow = c(2, 2))
+fit6 <- lm(crim ~ nox, data = dataset)
+summary(fit6)
+plot(fit6) 
+dataset$predicted <- predict(fit6)  
+dataset$residuals <- residuals(fit6)
+
+ggplot(dataset, aes(x = nox, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = nox, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") + 
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit7 <- lm(crim ~ rm, data = dataset)
+summary(fit7)
+par(mfrow = c(2, 2))
+plot(fit7) 
+dataset$predicted <- predict(fit7)  
+dataset$residuals <- residuals(fit7)
+ggplot(dataset, aes(x = rm, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = rm, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit8 <- lm(crim ~ dis, data = dataset)
+summary(fit8)
+par(mfrow = c(2, 2))
+plot(fit8) 
+dataset$predicted <- predict(fit8)  
+dataset$residuals <- residuals(fit8)
+ggplot(dataset, aes(x = dis, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = dis, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit9 <- lm(crim ~ tax, data = dataset)
+summary(fit9)
+par(mfrow = c(2, 2))
+plot(fit9) 
+dataset$predicted <- predict(fit9)  
+dataset$residuals <- residuals(fit9)
+ggplot(dataset, aes(x = tax, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = tax, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit10 <- lm(crim ~ ptratio, data = dataset)
+summary(fit10)
+par(mfrow = c(2, 2))
+plot(fit10) 
+dataset$predicted <- predict(fit10)  
+dataset$residuals <- residuals(fit10)
+ggplot(dataset, aes(x = ptratio, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = ptratio, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit11 <- lm(crim ~ black, data = dataset)
+summary(fit11)
+par(mfrow = c(2, 2))
+plot(fit11) 
+dataset$predicted <- predict(fit11)  
+dataset$residuals <- residuals(fit11)
+ggplot(dataset, aes(x = black, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = black, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+```{r out.width = "60%", fig.align='center'}
+fit12 <- lm(crim ~ lstat, data = dataset)
+summary(fit12)
+par(mfrow = c(2, 2))
+plot(fit12) 
+dataset$predicted <- predict(fit12)  
+dataset$residuals <- residuals(fit12)
+ggplot(dataset, aes(x = lstat, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = lstat, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+
+```{r out.width = "60%", fig.align='center'}
+fit13 <- lm(crim ~ medv, data = dataset)
+summary(fit13)
+par(mfrow = c(2, 2))
+plot(fit13) 
+dataset$predicted <- predict(fit10)  
+dataset$residuals <- residuals(fit10)
+ggplot(dataset, aes(x = medv, y = crim)) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  geom_segment(aes(xend = medv, yend = predicted), alpha = .2) +
+  geom_point(aes(color = residuals)) + 
+  scale_color_gradient2(low = "blue", mid = "orange", high = "red") +  
+  guides(color = FALSE) +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
