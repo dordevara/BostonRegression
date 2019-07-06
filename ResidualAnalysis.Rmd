@@ -10,7 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-In order to see how good the model we have produced fits the data, we will perform residual analysis for each of the predictors individually. This will help us see how is our error: is our error large oris it small. It will also tell us whether the model we are using is actually apropriate for our data.
+In order to see how good the model we have produced fits the data, we will perform residual analysis for each of the predictors individually. This will help us see how is our error: is our error large oris it small. It will also tell us whether the model we are using is actually apropriate for our data.  
+In fact, residuals are useful to identifying potential problems of any statistical model. For example, the residuals from a linear regression model should be homoscedastic (same variance). Otherwise, this indicates an issue with the model such as non-linearity in the data.
 ```{r}
 setwd("~/RDemo/BostonRegression")
 # read in data from a csv file
@@ -23,7 +24,7 @@ dataset <- Boston
 fit <- lm(crim ~ zn, data = dataset)
 summary(fit)
 par(mfrow = c(2, 2))
-plot(fit)  # Plot the model 
+plot(fit)  # Plot the model and the residuals in the traditional R way
 ```  
 
 ## Step 2: Obtain predicted and residual values
@@ -44,22 +45,22 @@ Next, we plot the predicted values in a way that they're distinguishable from th
 ```{r out.width = "50%", fig.align='center'}
 ggplot(dataset, aes(x = zn, y = crim)) +
   geom_point() +
-  geom_point(aes(y = predicted), shape = 1)  # Add the predicted values
+  geom_point(aes(y = predicted), shape = 2, color = "red")  # Add the predicted values and change their shape 
 ```
 Connect the actual data points with their corresponding predicted value
 ```{r out.width = "50%", fig.align='center'}
 ggplot(dataset, aes(x = zn, y = crim)) +
   geom_segment(aes(xend = zn, yend = predicted)) +
   geom_point()+
-  geom_point(aes(y = predicted), shape = 1)
+  geom_point(aes(y = predicted), shape = 2, color = "red")
 ```
 Add the regression slope with geom_smooth():  
 ```{r out.width = "50%", fig.align='center'}
 ggplot(dataset, aes(x = zn, y = crim)) +
-  geom_smooth(method = "lm", se = FALSE, color = "pink") +  # Plot regression slope
+  geom_smooth(method = "lm", se = FALSE, color = "purple") +  # Plot regression slope
   geom_segment(aes(xend = zn, yend = predicted), alpha = .2) +  # alpha to fade lines
   geom_point() +
-  geom_point(aes(y = predicted), shape = 1) +
+  geom_point(aes(y = predicted), shape = 2, color = "red") +
   theme_bw() 
 ``` 
 
@@ -67,13 +68,13 @@ ggplot(dataset, aes(x = zn, y = crim)) +
 Different color for actual value greater or less than predicted
 ```{r out.width = "50%", fig.align='center'}
 ggplot(dataset, aes(x = zn, y = crim)) +
-  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +
+  geom_smooth(method = "lm", se = FALSE, color = "purple") +
   geom_segment(aes(xend = zn, yend = predicted), alpha = .2) +
   # > Color adjustments made here...
   geom_point(aes(color = residuals)) +  # Color mapped here
-  scale_color_gradient2(low = "blue", mid = "white", high = "red") +  # Colors to use here
+  scale_color_gradient2(low = "blue", mid = "grey", high = "red") +  # Colors to use here
   guides(color = FALSE) +
-  geom_point(aes(y = predicted), shape = 1) +
+  geom_point(aes(y = predicted), shape = 2, color = "red") +
   theme_bw()
 ```
 In this example, the colours nicely help to identify non-linearity in the data:  
