@@ -1,0 +1,233 @@
+---
+title: "Simple Regression"
+author: "Roxana Butenco"
+date: "7/6/2019"
+output:
+  html_document: 
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("~/RDemo/BostonRegression")
+# read in data from a csv file
+Boston = read.csv(file="Boston.csv",header=TRUE,sep=",")
+names(Boston)
+```
+
+Fitting a Simple Linear Regression Model for crim and rad
+```{r}
+plot(col='blue', pch=1, cex=1, cex.main=1, main="Relationship between Rad and Crim", 
+     xlab = "Accessibility to radial highways",ylab = "Per Capita Crime Rate", rad, crim)
+slrm<-lm(crim~rad)
+summary(slrm)
+abline(slrm)
+#plot the two variables as a scatterplot and draw a linear regression line through the points. 
+#The gray bands around the line represent the standard error of the regression line. 
+ggplot(Boston, aes(x=rad, y=crim)) + 
+  geom_point(color='#2980B9', size = 4) + 
+  geom_smooth(method=lm, color='#2C3E50')
+#We gain additional information about the relationship by forming a confidence interval for the slope ??1
+confint(slrm) #confidence interval or The ??1 interval
+cor(crim,rad) # correlation coefficient r = .6255  #
+```
+The medium correlation confirms our conclusion that ??1 > 0 and it appears that crim and rad are positively correlated. All signs point to imply that a linear relationship between crim and rad may be a good fit but not an ideal one, and that it could be further improved by more data or by trying different other models.  
+
+Add predictions interval
+```{r}
+pred.int <- predict(slrm, interval = "prediction")
+mydata <- cbind(Boston, pred.int)
+library("ggplot2")
+p <- ggplot(mydata, aes(rad, crim)) +
+  geom_point() +
+  stat_smooth(method = lm)
+p + geom_line(aes(y = lwr), color = "red", linetype = "dashed")+
+  geom_line(aes(y = upr), color = "red", linetype = "dashed")
+# Point Estimate 
+predict(slrm,data.frame(rad=c(20)))
+new.dat <- data.frame(rad=20)
+predict(slrm, newdata = new.dat, interval = 'confidence')
+predict(slrm, newdata = new.dat, interval = 'prediction')
+#residual analysis 
+par(mfrow=c(2,3))
+confint(slrm)
+RESIDUALS=residuals(slrm)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(slrm)
+
+mean(rad)
+```
+
+simple linear regression model (one factor)
+```{r}
+plot(col='blue', pch=1, cex=1, cex.main=1, main="Relationship between Zone and Crime", 
+     xlab = "Proportion of residential land zoned for lots over 25,000 sq ft",ylab = "Per Capita Crime Rate", zn, crim)
+mod1=lm(crim~zn)
+summary(mod1)
+abline(mod1)
+#residual analysis 
+confint(mod1)
+RESIDUALS=residuals(mod1)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(mod1)
+```
+```{r}
+plot(indus,crim)
+lm.fit2=lm(crim~indus)
+summary(lm.fit2)
+abline(lm.fit2)
+#residual analysis 
+confint(lm.fit2)
+RESIDUALS=residuals(lm.fit2)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit2)
+
+plot(chas,crim)
+lm.fit3=lm(crim~chas)
+summary(lm.fit3)
+abline(lm.fit3)
+#residual analysis 
+confint(lm.fit3)
+RESIDUALS=residuals(lm.fit3)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit3)
+
+plot(nox,crim)
+lm.fit4=lm(crim~nox)
+summary(lm.fit4)
+abline(lm.fit4)
+#residual analysis 
+confint(lm.fit4)
+RESIDUALS=residuals(lm.fit4)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit4)
+
+plot(rm,crim)
+lm.fit5=lm(crim~rm)
+summary(lm.fit5)
+abline(lm.fit5)
+#residual analysis 
+confint(lm.fit5)
+RESIDUALS=residuals(lm.fit5)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit5)
+
+plot(age,crim)
+lm.fit6=lm(crim~age)
+summary(lm.fit6)
+abline(lm.fit6)
+#residual analysis 
+confint(lm.fit6)
+RESIDUALS=residuals(lm.fit6)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit6)
+
+plot(dis,crim)
+lm.fit7=lm(crim~dis)
+summary(lm.fit7)
+abline(lm.fit7)
+#residual analysis 
+confint(lm.fit7)
+RESIDUALS7=residuals(lm.fit7)
+qqnorm(RESIDUALS7)
+qqline(RESIDUALS7)
+hist(RESIDUALS7)
+plot(lm.fit7)
+
+plot(rad,crim)
+lm.fit8=lm(crim~rad)
+summary(lm.fit8)
+abline(lm.fit8)
+#residual analysis 
+confint(lm.fit8)
+RESIDUALS=residuals(lm.fit8)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit8)
+
+plot(tax,crim)
+lm.fit9=lm(crim~tax)
+summary(lm.fit9)
+abline(lm.fit9)
+#residual analysis 
+confint(lm.fit9)
+RESIDUALS=residuals(lm.fit9)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit9)
+
+plot(ptratio,crim)
+lm.fit10=lm(crim~ptratio)
+summary(lm.fit10)
+abline(lm.fit10)
+#residual analysis 
+confint(lm.fit10)
+RESIDUALS=residuals(lm.fit10)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit10)
+
+plot(black,crim)
+lm.fit11=lm(crim~black)
+summary(lm.fit11)
+abline(lm.fit11)
+#residual analysis 
+confint(lm.fit11)
+RESIDUALS=residuals(lm.fit11)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit11)
+
+plot(lstat,crim)
+lm.fit12=lm(crim~lstat)
+summary(lm.fit12)
+abline(lm.fit12)
+#residual analysis 
+confint(lm.fit12)
+RESIDUALS=residuals(lm.fit12)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit12)
+
+plot(medv,crim)
+lm.fit13=lm(crim~medv)
+summary(lm.fit13)
+abline(lm.fit13)
+#residual analysis 
+confint(lm.fit13)
+RESIDUALS=residuals(lm.fit11)
+qqnorm(RESIDUALS)
+qqline(RESIDUALS)
+hist(RESIDUALS)
+plot(lm.fit13)
+```  
+
+## Final points:
+
+There isn't a statistically signficant result between the predictor and the response for each of the above variable. The Charles River Dummy variable is a categorical var so we may actually try to fit a linear model without it.  
+When looking at the response variables and crime in simple scatter plots, we can see how a general linear regression with these variables would allow for a better prediction of crime than simply using the mean of crime, except for that is, the data seems to have some slight shape sloping up or down, and isn't a random cloud of data.  
+In those cases where the residual analysis revealed heteroscedasticity:
+
+That being said, while almost every variable is statistically significant, R-squared is very low, and so these predictors only describe a small amount of the variation in the response. 
